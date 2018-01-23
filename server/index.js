@@ -13,8 +13,11 @@ passport.use(
       clientID: keys.GOOGLE_CLIENT_ID,
       clientSecret: keys.GOOGLE_CLIENT_SECRET,
       callbackURL: keys.GOOGLE_CALLBACK_URL
-    }, (accessToken) => {
-      console.log(accessToken);
+    }, (accessToken, refreshToken, profile, done) => {
+      console.log('access token', accessToken);
+      console.log('refresh token', refreshToken);
+      console.log('profile', profile);
+
     }
  ))
 
@@ -25,6 +28,9 @@ app.get('/auth/google',
     scope: ['profile', 'email']
   }
 ))
+
+// get requested google profile information
+app.get('/auth/google/callback', passport.authenticate('google'))
 
 //default route
 app.get('/*', (req, res) => res.send({hi:'there'}))
