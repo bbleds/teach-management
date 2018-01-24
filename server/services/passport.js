@@ -19,7 +19,6 @@ passport.deserializeUser((userID, done) => {
     })
 })
 
-
 // register google oauth with passport and specify callback url
 passport.use(
   new GoogleStrategy(
@@ -27,30 +26,25 @@ passport.use(
       clientID: keys.GOOGLE_CLIENT_ID,
       clientSecret: keys.GOOGLE_CLIENT_SECRET,
       callbackURL: keys.GOOGLE_CALLBACK_URL
-    }, (accessToken, refreshToken, profile, done) => {
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        // if no existing user is found, we should create one and then continue auth flow
+        const existingUser = await User.findOne({googleID:profile.id})
 
-      // check if this user exists
-      User
-        .findOne({googleID:profile.id})
-        .then( existingUser => {
+        if(existingUser) return done(null, existingUser)
 
-          !existingUser ?
-            //  create new user, then continue auth flow
-            new User({
-              googleID : profile.id,
-              firstName: profile.name.givenName,
-              lastName: profile.name.familyName,
-              knownEmails: profile.emails,
-              rawInitialCreationResponse: profile._raw
-            })
-            .save()
-            .then((user) => {
-              done(null, user)
-            })
-            .catch(err => console.log('An error occurred in auth flow',err) ) :
+        const newUser = await new User({
+          googleID : profile.id,
+          firstName: profile.name.givenName,
+          lastName: profile.name.familyName,
+          knownEmails: profile.emails,
+          rawInitialCreationResponse: profile._raw
+        }).save()
 
-            // user exists, continue auth flow
-            done(null, existingUser)
-        })
-        .catch(err => console.log('an error occurred in auth flow',err) )
-    }))
+        done(null, newUser)
+      }
+      catch(error) {
+        console.log('an error occurred during auth', error)
+      }
+}))
