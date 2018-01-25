@@ -16,13 +16,12 @@ class App extends Component {
 
   render(){
     const { user } = this.props
-    let name = user ? user.firstName : 'Unknown'
 
     return (
       <div className="container">
         <BrowserRouter>
           <div>
-           <Header/>
+           <Header user={user} />
            <Route exact path="/" component={Landing} />
            <Route exact path="/dashboard" component={Dashboard} />
           </div>
@@ -34,7 +33,8 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    user: state.auth.user
+    user: state.auth.user,
+    error: state.error
   }
 }
 

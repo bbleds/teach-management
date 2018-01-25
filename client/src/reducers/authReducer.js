@@ -1,11 +1,23 @@
-import { FETCH_USER_SUCCESS } from '../constants'
+import {
+  FETCH_USER_SUCCESS,
+  FETCH_USER_FAILURE
+ } from '../constants'
 
-export default (state = {}, action) => {
+const initialState = {
+  user: null
+}
+
+export default (state = initialState, action) => {
   switch(action.type){
     case FETCH_USER_SUCCESS:
       return {
         ...state,
-        user: action.payload.data
+        user: action.payload
+      }
+    case FETCH_USER_FAILURE:
+      return {
+        ...state,
+        user: false
       }
     default:
       return state

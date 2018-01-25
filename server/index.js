@@ -24,6 +24,6 @@ require('./routes')(app)
 mongoose.connect( MONGODB_URI )
 
 //default route
-app.get('/*', (req, res) => res.send({hi:'there'}))
+app.get('/*', (req, res) => res.send({'default':'handler'}))
 
 app.listen(PORT, () => console.log(`Application listening on port ${PORT}`))

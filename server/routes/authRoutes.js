@@ -10,15 +10,15 @@ module.exports = app => {
   ))
 
   // get requested google profile information
-  app.get('/auth/google/callback', passport.authenticate('google'))
+  app.get(
+    '/auth/google/callback',
+    passport.authenticate('google'),
+    (req, res) => res.redirect('/dashboard')
+  )
 
   app.get('/api/current_user', (req, res) => {
     res.send(req.user)
   })
 
-  app.get('/api/logout', (req, res) => {
-    // log out using passport logout method that is attached to req
-    req.logout()
-    res.send(req.user)
-  })
+  app.get('/api/logout', (req, res) => (req.logout(),res.redirect('/')))
 }
